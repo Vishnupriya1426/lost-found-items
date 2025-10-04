@@ -1,0 +1,171 @@
+package com.myorg.lostfound.controller;
+
+import com.myorg.lostfound.dto.ApiResponse;
+import com.myorg.lostfound.dto.FoundItemRequestDto;
+import com.myorg.lostfound.dto.FoundItemResponseDto;
+import com.myorg.lostfound.service.FoundItemService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.List;
+
+/**
+ * REST Controller for FoundItem operations
+ */
+@RestController
+@RequestMapping("/api/found-items")
+@CrossOrigin(origins = "*")
+public class FoundItemController {
+
+    @Autowired
+    private FoundItemService foundItemService;
+
+    /**
+     * Create a new found item
+     */
+    @PostMapping
+    public ResponseEntity<ApiResponse<FoundItemResponseDto>> createFoundItem(
+            @Valid @RequestBody FoundItemRequestDto requestDto) {
+        try {
+            FoundItemResponseDto responseDto = foundItemService.createFoundItem(requestDto);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(ApiResponse.success("Found item created successfully", responseDto));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.error("Failed to create found item: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Get found item by ID
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<FoundItemResponseDto>> getFoundItemById(@PathVariable Long id) {
+        try {
+            FoundItemResponseDto responseDto = foundItemService.getFoundItemById(id);
+            return ResponseEntity.ok(ApiResponse.success("Found item retrieved successfully", responseDto));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.error("Found item not found: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Get all found items
+     */
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<FoundItemResponseDto>>> getAllFoundItems() {
+        try {
+            List<FoundItemResponseDto> responseDtos = foundItemService.getAllFoundItems();
+            return ResponseEntity.ok(ApiResponse.success("Found items retrieved successfully", responseDtos));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Failed to retrieve found items: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Get found items by user ID
+     */
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<ApiResponse<List<FoundItemResponseDto>>> getFoundItemsByUserId(@PathVariable Long userId) {
+        try {
+            List<FoundItemResponseDto> responseDtos = foundItemService.getFoundItemsByUserId(userId);
+            return ResponseEntity.ok(ApiResponse.success("Found items retrieved successfully", responseDtos));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Failed to retrieve found items: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Get found items by category
+     */
+    @GetMapping("/category/{category}")
+    public ResponseEntity<ApiResponse<List<FoundItemResponseDto>>> getFoundItemsByCategory(@PathVariable String category) {
+        try {
+            List<FoundItemResponseDto> responseDtos = foundItemService.getFoundItemsByCategory(category);
+            return ResponseEntity.ok(ApiResponse.success("Found items retrieved successfully", responseDtos));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Failed to retrieve found items: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Get found items by location
+     */
+    @GetMapping("/location/{location}")
+    public ResponseEntity<ApiResponse<List<FoundItemResponseDto>>> getFoundItemsByLocation(@PathVariable String location) {
+        try {
+            List<FoundItemResponseDto> responseDtos = foundItemService.getFoundItemsByLocation(location);
+            return ResponseEntity.ok(ApiResponse.success("Found items retrieved successfully", responseDtos));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Failed to retrieve found items: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Search found items by title
+     */
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<FoundItemResponseDto>>> searchFoundItemsByTitle(
+            @RequestParam String title) {
+        try {
+            List<FoundItemResponseDto> responseDtos = foundItemService.searchFoundItemsByTitle(title);
+            return ResponseEntity.ok(ApiResponse.success("Search completed successfully", responseDtos));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Search failed: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Get recent found items
+     */
+    @GetMapping("/recent")
+    public ResponseEntity<ApiResponse<List<FoundItemResponseDto>>> getRecentFoundItems(
+            @RequestParam(defaultValue = "7") int days) {
+        try {
+            List<FoundItemResponseDto> responseDtos = foundItemService.getRecentFoundItems(days);
+            return ResponseEntity.ok(ApiResponse.success("Recent found items retrieved successfully", responseDtos));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Failed to retrieve recent found items: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Update found item
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<FoundItemResponseDto>> updateFoundItem(
+            @PathVariable Long id,
+            @Valid @RequestBody FoundItemRequestDto requestDto) {
+        try {
+            FoundItemResponseDto responseDto = foundItemService.updateFoundItem(id, requestDto);
+            return ResponseEntity.ok(ApiResponse.success("Found item updated successfully", responseDto));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.error("Failed to update found item: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Delete found item
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteFoundItem(@PathVariable Long id) {
+        try {
+            foundItemService.deleteFoundItem(id);
+            return ResponseEntity.ok(ApiResponse.success("Found item deleted successfully", null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.error("Failed to delete found item: " + e.getMessage()));
+        }
+    }
+}
