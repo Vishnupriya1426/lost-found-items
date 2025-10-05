@@ -135,3 +135,4 @@ public class TextVectorizer {
         return totalDocuments;
     }
 }
+

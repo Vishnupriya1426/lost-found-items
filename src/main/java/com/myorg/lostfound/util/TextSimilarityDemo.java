@@ -94,3 +94,4 @@ public class TextSimilarityDemo {
         System.out.println("Are documents 3 and 4 similar above threshold " + threshold + "? " + isSimilar3_4);
     }
 }
+

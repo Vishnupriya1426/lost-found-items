@@ -204,3 +204,4 @@ Cosine Similarity: 0.8234
 3. **N-grams**: Consider word sequences for better context
 4. **Caching**: Cache computed vectors for frequently accessed documents
 5. **Batch Processing**: Optimize for bulk similarity calculations
+

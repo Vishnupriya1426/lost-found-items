@@ -72,3 +72,4 @@ public class CosineSimilarity {
         return compute(vectorA, vectorB) >= threshold;
     }
 }
+
