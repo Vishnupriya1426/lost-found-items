@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -152,6 +153,36 @@ public class FileUploadController {
     public ResponseEntity<Resource> serveImage(@PathVariable String filename) {
         try {
             Path filePath = Paths.get("uploads").resolve(filename).normalize();
+if (filePath == null) {
+    return ResponseEntity.badRequest().build();
+}
+
+URI uri;
+try {
+    uri = filePath.toUri();
+} catch (Exception e) {
+    return ResponseEntity.badRequest().build();
+}
+
+Resource resource;
+try {
+    resource = new UrlResource(uri);
+} catch (MalformedURLException e) {
+    return ResponseEntity.badRequest().build();
+}
+
+if (resource.exists() && resource.isReadable()) {
+    String contentType = determineContentType(filename);
+
+    return ResponseEntity.ok()
+            .contentType(MediaType.parseMediaType(contentType))
+            .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
+            .body(resource);
+} else {
+    return ResponseEntity.notFound().build();
+}
+
+           /*  Path filePath = Paths.get("uploads").resolve(filename).normalize();
             Resource resource = new UrlResource(filePath.toUri());
             
             if (resource.exists() && resource.isReadable()) {
@@ -163,7 +194,7 @@ public class FileUploadController {
                         .body(resource);
             } else {
                 return ResponseEntity.notFound().build();
-            }
+            }*/
             
         } catch (MalformedURLException e) {
             return ResponseEntity.badRequest().build();
